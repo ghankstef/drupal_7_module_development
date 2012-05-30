@@ -1,0 +1,80 @@
+<?php
+
+/**
+* @file
+* Enables a single user blog
+*/
+
+define('SINGLE_BLOG_NODE_TYPE', 'article');
+define('SINGLE_BLOG_LIST_COUNT', 3);
+
+/**
+* Returns a list of blog entries
+*
+* @param $number 
+* The number of blog entries to return
+*
+* @return 
+* a result set object containing the list of blog entries
+*/
+function single_blog_list ($number) {
+  $query = db_select('node', 'n')
+  ->fields('n', array('nid', 'title', 'created', 'uid'))
+  ->condition('type', SINGLE_BLOG_NODE_TYPE)
+  ->condition('status', 1)
+  ->orderBy('created', 'DESC')
+  ->range(0, $number)
+  ->addTag('node_access')
+  ->execute();
+  return $query;
+}
+
+/**
+* Implements hook_block_info
+*/
+function single_blog_block_info () {
+  $blocks = array();
+
+  $blocks['recent'] = array(
+    'info' => t('Recent Blog Posts'),
+  );
+  return $blocks;
+}
+
+/**
+* Implements hook_block_view
+* 
+* @param $delta
+* the name of the requestedblock
+*/
+
+function single_blog_view($delta = '') {
+  $block = array(
+    'subject' => '',
+    'content' => '',
+  );
+
+  if ($delta == 'recent' ) {
+    $block['subject'] = t('Recent Blog Posts');    
+    if(user_access('access content')) {
+      $result = single_blog_list(SINGLE_BLOG_LIST_COUNT);
+      
+      // Create links for each blog entry
+      $items = array();
+      foreach ( $result as $node) {
+        $items[] = array(
+          'data' => l($node->title, 'node/' . $node->nid),
+          'class' => array('node-' . $node->nid),
+        );
+      }
+      if (!empty($items)) {
+        $block['content'] = theme('item_list', array('items' => $items));
+      }  
+    }
+  }
+  return $block;
+}
+
+
+
+
