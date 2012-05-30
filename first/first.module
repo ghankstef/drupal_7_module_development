@@ -1,0 +1,48 @@
+<?php
+/**
+ * @file
+ * A module to practice Drupal APIs
+ * 
+ * This module lists all installed modules for coding practice with the Druapl API
+ */
+
+/**
+ * Implements hook_help
+ */
+function first_help($path, $arg) {
+  if($path == 'admin/help#first') {
+    return t('A demonstration module');
+  }
+}
+
+/**
+ * Implements hook_block_info
+ */
+function first_block_info(){
+  $blocks = array();
+   
+  $blocks['list_modules'] = array(
+    'info' => t('A listing of all enabled modules'),
+    'cache' => DRUPAL_NO_CACHE,
+  ); 
+  
+  return $blocks;
+}
+
+
+/**
+ * Implements hook_block_view
+ */
+function first_block_view($block_name = '') {
+  if($block_name == 'list_modules') {
+    $list = module_list();
+    $theme_args = array('items' => $list, 'type' => 'ul');
+    $content = theme('item_list', $theme_args);
+    
+    $block = array(
+      'subject' => t('Enabled Modules'),
+      'content' => $content, 
+    );
+    return $block;
+  }
+}
