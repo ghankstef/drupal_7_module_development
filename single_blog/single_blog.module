@@ -48,7 +48,7 @@ function single_blog_block_info () {
 * the name of the requestedblock
 */
 
-function single_blog_view($delta = '') {
+function single_blog_block_view($delta = '') {
   $block = array(
     'subject' => '',
     'content' => '',
