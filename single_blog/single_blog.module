@@ -64,8 +64,8 @@ function single_blog_block_view($delta = '') {
       foreach ( $result as $node) {
         $items[] = array(
           'data' => array(
-           '#type' => 'link',
-           '#title' => $node->title,
+           '#theme' => 'item_list__single_blog',
+           '#node' => $node,
            '#href' => 'node/' . $node->nid,
           ),
           'class' => array('node-' . $node->nid),
@@ -75,18 +75,45 @@ function single_blog_block_view($delta = '') {
         $block['content']['list'] = array(
           '#theme' => 'item_list__single_blog',
           '#items' => $items,
+          '#pre_render' => array('single_blog_list_child_render'),
         );
         $block['content']['more'] = array(
           '#theme' => 'more_link',
           '#url' => 'blog',
           '#title' => t('Read the latest blog posts'),
         );
+        $block['content']['#attached']['css'][] = drupal_get_path('module', 'single_blog') . '/single_blog.css';
       }  
     }
   }
   return $block;
 }
+/**
+* take the array we created in single_blog_list and single_blog_block_view and render it as html 
+* this is to overcome the fact that theme_item_list()  will not take a render element
+*/
+function single_blog_list_child_render ($elements) {
+  foreach (array_keys($elements['#items']) AS $key) {
+    if (is_array($elements['#items'][$key]['data'])) {
+      $elements['#items'][$key]['data'] = drupal_render($elements['#items'][$key]['data']);
+      
+    }
+  }
+  return $elements;
+}
 
-
+/**
+* implements hook_theme
+*/
+function single_blog_theme () {
+  return array(
+    'single_blog_block_item' => array(
+      'vars' => array(
+        'node' => NULL,
+      ),
+      'template' => 'single_blog_block_item',
+    ),
+  );
+}
 
 
