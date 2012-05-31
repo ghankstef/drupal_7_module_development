@@ -63,12 +63,24 @@ function single_blog_block_view($delta = '') {
       $items = array();
       foreach ( $result as $node) {
         $items[] = array(
-          'data' => l($node->title, 'node/' . $node->nid),
+          'data' => array(
+           '#type' => 'link',
+           '#title' => $node->title,
+           '#href' => 'node/' . $node->nid,
+          ),
           'class' => array('node-' . $node->nid),
         );
       }
       if (!empty($items)) {
-        $block['content'] = theme('item_list', array('items' => $items));
+        $block['content']['list'] = array(
+          '#theme' => 'item_list__single_blog',
+          '#items' => $items,
+        );
+        $block['content']['more'] = array(
+          '#theme' => 'more_link',
+          '#url' => 'blog',
+          '#title' => t('Read the latest blog posts'),
+        );
       }  
     }
   }
