@@ -6,3 +6,11 @@
   list-style-type: none;
   margin-bottom: 0;
 }
+
+.single-blog-block-item {
+  padding-bottom: 2em;
+}
+
+.single-blog-block-item h4 {
+  margin-top: 0.5em;
+}

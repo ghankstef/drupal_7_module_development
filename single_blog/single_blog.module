@@ -109,7 +109,7 @@ function single_blog_theme () {
       'vars' => array(
         'node' => NULL,
       ),
-      'template' => 'single_blog_block_item',
+      'template' => 'single-blog-block-item',
     ),
   );
 }
@@ -118,7 +118,6 @@ function single_blog_theme () {
 * preprocess single blog item variables
 */
 function template_preprocess_single_blog_block_item (&$vars) {
-  var_dump($vars['']);
   $node = $vars['']['#node'];
   $vars['title'] = array(
     '#type' => 'link',
