@@ -64,9 +64,8 @@ function single_blog_block_view($delta = '') {
       foreach ( $result as $node) {
         $items[] = array(
           'data' => array(
-           '#theme' => 'item_list__single_blog',
+           '#theme' => 'single_blog_block_item',
            '#node' => $node,
-           '#href' => 'node/' . $node->nid,
           ),
           'class' => array('node-' . $node->nid),
         );
@@ -96,7 +95,6 @@ function single_blog_list_child_render ($elements) {
   foreach (array_keys($elements['#items']) AS $key) {
     if (is_array($elements['#items'][$key]['data'])) {
       $elements['#items'][$key]['data'] = drupal_render($elements['#items'][$key]['data']);
-      
     }
   }
   return $elements;
@@ -114,6 +112,24 @@ function single_blog_theme () {
       'template' => 'single_blog_block_item',
     ),
   );
+}
+
+/**
+* preprocess single blog item variables
+*/
+function template_preprocess_single_blog_block_item (&$vars) {
+  var_dump($vars['']);
+  $node = $vars['']['#node'];
+  $vars['title'] = array(
+    '#type' => 'link',
+    '#title' => $node->title,
+    '#href' => 'node /' . $node->nid,
+  );
+  
+  $vars['created'] = $node->created;
+  $vars['date'] = format_date($node->created, 'custom', 'F d, Y');
+  $vars['user'] = user_load($node->uid);
+  $vars['name'] = theme('username', array('account' => $vars['user']));
 }
 
 
