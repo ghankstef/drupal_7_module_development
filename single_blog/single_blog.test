@@ -1,0 +1,36 @@
+<?php
+
+/*
+ * @file 
+ * tests for the sinble blog module.
+ */
+
+/**
+ *
+ * @author ghank
+ */
+class SingleBlogTestCase extends DrupalWebTestCase {
+  public function setUp() {
+    parent::setUp('single_blog');
+  }
+
+  public function getInfo() {
+    return array(
+      'name' => 'Single Blog module block functionality',
+      'description' => 'Test blocks in single blog module',
+      'group' => 'Single Blog',
+    ); 
+  }
+  public function TestBlockInfo () {
+    $info = module_invoke('single_blog', 'block_info');
+    $this->assertEqual(1, count($info), t('Module defines a block'));
+    $this->assertTrue(isset($info['recent']), t('Recent Blogs exists'));
+  } 
+
+  public function TestBlockView () {
+    $data = module_invoke('single_blog', 'block_view', $block_name = 'recent');
+    $this->assertTrue(is_array($data), t('Block returns a renderable array'));
+    $this->assertEqual(t('Recent Blog Posts'), $data['subject'], t('Subject is set correctly'));
+  }
+}
+
