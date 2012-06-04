@@ -1,0 +1,8 @@
+name = User Warn 
+description = Exposes an admin interface for sending warnings to users via e-mail
+core = 7.x 
+package = Drupal 7 Development
+files = user_warn.module
+
+
+

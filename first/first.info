@@ -1,6 +1,6 @@
   name = first
   description = a first module
-  package = Drupal 7 development
   core = 7.x
+  package = Drupal 7 Development
   files[] = first.module
   files[] = first.test
