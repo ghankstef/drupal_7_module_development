@@ -1,0 +1,10 @@
+name = Artwork
+description = Exposes a new entity type called artwork
+core = 7.x 
+package = Drupal 7 Development
+files[] = artwork.module
+files[] = artwork.test
+
+
+
+
