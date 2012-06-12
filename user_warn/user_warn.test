@@ -4,3 +4,27 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+class UserWarnTestCase extends DrupalWebTestCase {
+  
+  public function setUp() {
+    parent::setUp('user_warn');
+  }
+
+  public function getInfo() {
+    return array(
+      'name' => 'User Warn module block functionality',
+      'description' => 'Test forms in user warn module',
+      'group' => 'User Warn',
+    ); 
+  }
+  
+  public function TestUserWarnForm() {
+    $form = drupal_get_form('user_warn_form');
+    $this->assertTrue(is_array($form), t('form array is returned'));
+    $this->assertTrue(array_key_exists('user_warn_e-mail_subject', $form), t('Email subject form element exists'));
+    $this->assertTrue(array_key_exists('user_warn_e-mail_text', $form), t('Email text form element exists'));
+    $this->assertTrue(array_key_exists('user_warn_bcc', $form), t('Email bcc form element exists'));
+  }
+
+
+}?>
