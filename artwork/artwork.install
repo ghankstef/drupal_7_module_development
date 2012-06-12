@@ -95,13 +95,13 @@ function artwork_schema() {
         'foreign keys' => array(
           'artwork' => array(
             'table' => 'artwork',
-            'columns' => array(
-              'aid' => 'aid', 
-            ),
-          ),
-        ),
-     ),    
-  );
+              'columns' => array(
+                'aid' => 'aid', 
+              ),
+           ),
+         ),
+      ),    
+   );
 
   return $schema;
 }
