@@ -6,6 +6,40 @@
  */
 
 /**
+ * implements hook_menu 
+ */
+function artwork_menu() {
+  $items = array();
+  $items['admin/structure/artworks'] = array(
+    'title' => 'Manage Artworks',
+    'description' => 'Manage Artworks',
+    'page callback' => 'artwork_overview_types',
+    'access arguments' => array('administer artworks'),
+  );
+  $items['admin/structure/artworks/manage/%artworks'] = array(
+    'title' => 'Manage artworks',
+    'title callback' => 'artwork_type_page_title',
+    'title arguments' => array(4),
+    'page callback' => 'artwork_information',
+    'page arguments' => array(4),
+    'access arguments' => array('administer artworks'),
+  );
+  $items['admin/structure/artworks/manage/%artwork_type/view'] = array(
+    'title' => 'View',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+  
+  return $items;
+}
+
+/**
+ * callback for  admin/structure/artworks  hook_menu definition
+ */
+function artwork_overview_types() {
+  
+}
+
+/**
  * Implements hook_entity_info 
  */
 function artwork_entity_info() {
@@ -53,4 +87,64 @@ function artwork_entity_info() {
   }
   
   return $return;
+}
+
+/**
+ * @function artowrk_uri preps output for link  functions  l() or url() 
+ * @param type $artwork 
+ */
+function artwork_uri($artwork) {
+  return array(
+    'path' => 'artwork/' . $artwork->aid,
+  );
+}
+
+/**
+ * @function artwork_types returns php object arrays a la nodes of defined artwork entity types 
+ */
+function artwork_types() {
+  $types = &drupal_static(__FUNCTION__);
+  if (empty($types)) {
+    $type['painting'] = (object) array(
+      'type' => 'painting',
+      'name' => t('Painting'),
+      'description' => t('A picture made with paint'),
+    );
+    $type['sculpture'] = (object) array(
+      'type' => 'sculpture',
+      'name' => t('Sculpture'),
+      'description' => t('A carving made of stone or wood'),
+    );
+  }
+  return $types;
+}
+
+
+/**
+ * @function load an artworks entity
+ * @param type $aid - the aid from the database table artwork - primary key
+ * @param type $vid - the vid from the database table artwork_revisions - primary key
+ * @param type $reset - boolean
+ */
+function artwork_load($aid = NULL, $vid = NULL, $reset = FALSE) {
+  $aids = array();
+  $conditions = array();
+  $aids = (isset($aid) ? array($aid) : array());
+  $conditions = (isset($vid) ? array($vid) : array());
+  $artwork = artwork_load_multiple($aid, $vid, $reset);
+  return $artwork? reset($artwork) : FALSE; 
+}
+
+/**
+ *@function load multiple artwork entities
+ * @param type $aids - an array of $aids
+ * @param type $condtions - an array of $vids
+ * @param type $reset - boolean
+ * @return type 
+ */
+
+function artwork_load_multiple($aids, $condtions, $reset) {
+  $types = artwork_types();
+  $type = str_replace('-', '_', $type);
+  return isset($types[$type]) ? $types[$type] : FALSE;
 }

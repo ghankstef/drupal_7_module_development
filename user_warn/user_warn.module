@@ -51,7 +51,7 @@ function user_warn_menu() {
  * @param type $form - array to hold form field
  * @param type $form_state - be sure to pass by reference &$form_state 
  */
-function user_warn_form($form, &$form_state) {
+  function user_warn_form($form, &$form_state) {
   define('USER_WARN_MAIL_TEXT',
   'Hello [user:name],
    We have been notified that you have posted comments on [site:name] that

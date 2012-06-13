@@ -4,6 +4,7 @@
  * @file
  * Schema definition for the artwork entity - closely mirrors a node schema
  */
+
 /**
  * @function artwork_schema implements hooks_schema 
  */
@@ -11,97 +12,97 @@ function artwork_schema() {
   $schema = array();
   $schema['artwork'] = array(
     'description' => 'the base table for artworks.',
-      'fields' => array(
-        'aid' => array(
-          'description' => 'primary key field for the artowrk entity',
-          'type' => 'serial',
-          'unsigned' => TRUE,
-          'not null' => TRUE,
-        ),
-        'vid' => array(
-          'description' => 'The current {artwork_revision}.vid version indetifier',
-          'type' => 'int',
-          'unsigned' => TRUE,
-          'not null' => TRUE,
-          'default' => 0,
-        ),
-        'type' => array(
-          'description' => 'The {artwork_type} of this artwork.',
-          'type' => 'varchar',
-          'length' => 32,
-          'not null' => TRUE,
-          'default' => '',
-        ),
-        'title' => array(
-          'description' => 'The title of the artwork',
-          'type' => 'varchar',
-          'length' => 255,
-          'not null' => TRUE,
-          'default' => '',
-        ),
-        'created' => array(
-          'description' => 'The unix timestamp when the artwork was created in the system',
-          'type' => 'int',
-          'not null' => TRUE,
-          'default' => 0,
-        ),
-        'changed' => array(
-          'description' => 'The unix timestamp for when the artwork was most recelty saved',
-          'type' => 'int',
-          'not null' => TRUE,
-          'default' => 0,
-        ),
-        'unique keys' => array(
-          'aid_vid' => array('aid', 'vid'),
-          'aid' => array('aid'),
-        ),
-        'primary key' => array('aid'),
-     ),    
+    'fields' => array(
+      'aid' => array(
+        'description' => 'primary key field for the artowrk entity',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'vid' => array(
+        'description' => 'The current {artwork_revision}.vid version indetifier',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'type' => array(
+        'description' => 'The {artwork_type} of this artwork.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'title' => array(
+        'description' => 'The title of the artwork',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'created' => array(
+        'description' => 'The unix timestamp when the artwork was created in the system',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The unix timestamp for when the artwork was most recelty saved',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'unique keys' => array(
+      'aid_vid' => array('aid', 'vid'),
+      'aid' => array('aid'),
+    ),
+    'primary key' => array('aid'),
   );
-  
+
   $schema['artwork_revision'] = array(
     'description' => 'the base table for artworks.',
-      'fields' => array(
-        'aid' => array(
-          'description' => 'primary key field for the artowrk entity',
-          'type' => 'serial',
-          'unsigned' => TRUE,
-          'not null' => TRUE,
+    'fields' => array(
+      'aid' => array(
+        'description' => 'primary key field for the artowrk entity',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'vid' => array(
+        'description' => 'The current {artwork_revision}.vid version indetifier',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'title' => array(
+        'description' => 'The title of the artwork',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'created' => array(
+        'description' => 'The unix timestamp when the artwork was created in the system',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'indexes' => array(
+        'aid' => array('aid'),
+      ),
+    'primary key' => array('vid'),
+    'foreign keys' => array(
+      'artwork' => array(
+        'table' => 'artwork',
+        'columns' => array(
+          'aid' => 'aid',
         ),
-        'vid' => array(
-          'description' => 'The current {artwork_revision}.vid version indetifier',
-          'type' => 'int',
-          'unsigned' => TRUE,
-          'not null' => TRUE,
-          'default' => 0,
-        ),
-        'title' => array(
-          'description' => 'The title of the artwork',
-          'type' => 'varchar',
-          'length' => 255,
-          'not null' => TRUE,
-          'default' => '',
-        ),
-        'created' => array(
-          'description' => 'The unix timestamp when the artwork was created in the system',
-          'type' => 'int',
-          'not null' => TRUE,
-          'default' => 0,
-        ),
-        'indexes' => array(
-          'aid' => array('aid'),
-        ),
-        'primary key' => array('vid'),
-        'foreign keys' => array(
-          'artwork' => array(
-            'table' => 'artwork',
-              'columns' => array(
-                'aid' => 'aid', 
-              ),
-           ),
-         ),
-      ),    
-   );
+      ),
+    ),
+  );
 
   return $schema;
 }
