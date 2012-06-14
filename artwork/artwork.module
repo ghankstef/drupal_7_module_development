@@ -28,15 +28,60 @@ function artwork_menu() {
     'title' => 'View',
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
-  
+
+  $items['artwork_add'] = array(
+    'title' => 'Add new artwork',
+    'page callback' => 'artwork_add_page',
+    'access arguments' => array('create artworks'),
+    'weight' => 1,
+    'menu_name' => 'management',
+    'file' => 'artwork.pages.inc',
+  );
+  foreach (artwork_types as $type) {
+    $type_url_str = str_replace('_', '-', $type->type);
+    $items['artwork/add/' . $type_url_str] = array(
+      'title' => $type->name,
+      'title callback' => 'check_plain',
+      'page callback' => 'artwork_add',
+      'page arguments' => array(2),
+      'access arguments' => array('create artwork'),
+      'description' => $type->description,
+    );
+  }
+
   return $items;
 }
 
 /**
- * callback for  admin/structure/artworks  hook_menu definition
+ * callback for  admin/structure/artworks hook_menu definition returns themed list of artwork types
  */
 function artwork_overview_types() {
-  
+  $items = array();
+  foreach (artwork_types() as $type => $info) {
+    $type_url_str = str_replace('_', '-', $type);
+    $label = t('View @type', array('@type' => $info->name));
+    $items[] = l($label, 'admin/structure/artworks/manage/' .
+        $type_url_str);
+  }
+  return theme('item_list', array('items' => $items));
+}
+
+/**
+ *
+ * @param type $type - an artwork type array object
+ * @return string to Manage an artwork type 
+ */
+function artwork_type_page_title($type) {
+  return t('Manage @type', array('@type' => $type->name));
+}
+
+/**
+ *
+ * @param type $artwork_type
+ * @return string to artworks type name and title
+ */
+function artwork_information($artwork_type) {
+  return $artwork_type->name . ': ' . $artwork_type->description;
 }
 
 /**
@@ -73,19 +118,19 @@ function artwork_entity_info() {
       ),
     ),
   );
-  
-  foreach(artwork_types() as $type => $info ) {
+
+  foreach (artwork_types() as $type => $info) {
     $return['artwork']['bundels'][$type] = array(
       'label' => $info->name,
       'admin' => array(
         'path' => 'admin/structure/artworks/%artwork_work',
         'real path' => 'admin/structure/artworks/manage/' . str_replace('_', '-', $type),
-        'bundle argument' => 4, 
+        'bundle argument' => 4,
         'access arguments' => array('administer artworks'),
       ),
     );
   }
-  
+
   return $return;
 }
 
@@ -106,19 +151,18 @@ function artwork_types() {
   $types = &drupal_static(__FUNCTION__);
   if (empty($types)) {
     $type['painting'] = (object) array(
-      'type' => 'painting',
-      'name' => t('Painting'),
-      'description' => t('A picture made with paint'),
+          'type' => 'painting',
+          'name' => t('Painting'),
+          'description' => t('A picture made with paint'),
     );
     $type['sculpture'] = (object) array(
-      'type' => 'sculpture',
-      'name' => t('Sculpture'),
-      'description' => t('A carving made of stone or wood'),
+          'type' => 'sculpture',
+          'name' => t('Sculpture'),
+          'description' => t('A carving made of stone or wood'),
     );
   }
   return $types;
 }
-
 
 /**
  * @function load an artworks entity
@@ -132,17 +176,16 @@ function artwork_load($aid = NULL, $vid = NULL, $reset = FALSE) {
   $aids = (isset($aid) ? array($aid) : array());
   $conditions = (isset($vid) ? array($vid) : array());
   $artwork = artwork_load_multiple($aid, $vid, $reset);
-  return $artwork? reset($artwork) : FALSE; 
+  return $artwork ? reset($artwork) : FALSE;
 }
 
 /**
- *@function load multiple artwork entities
+ * @function load multiple artwork entities
  * @param type $aids - an array of $aids
  * @param type $condtions - an array of $vids
  * @param type $reset - boolean
  * @return type 
  */
-
 function artwork_load_multiple($aids, $condtions, $reset) {
   $types = artwork_types();
   $type = str_replace('-', '_', $type);
