@@ -46,6 +46,7 @@ function artwork_menu() {
       'page arguments' => array(2),
       'access arguments' => array('create artwork'),
       'description' => $type->description,
+      'file' => 'artwork.pages.inc',
     );
   }
 
@@ -165,29 +166,118 @@ function artwork_types() {
 }
 
 /**
- * @function load an artworks entity
- * @param type $aid - the aid from the database table artwork - primary key
- * @param type $vid - the vid from the database table artwork_revisions - primary key
- * @param type $reset - boolean
+ * @function method for loading and artwork entity
+ * @param type $aid  and artwork id 
+ * @param type $vid -  artwork version id
+ * @param type $reset - TRUE or FALSE
+ * @return type an artwork  entity
  */
 function artwork_load($aid = NULL, $vid = NULL, $reset = FALSE) {
-  $aids = array();
-  $conditions = array();
-  $aids = (isset($aid) ? array($aid) : array());
-  $conditions = (isset($vid) ? array($vid) : array());
-  $artwork = artwork_load_multiple($aid, $vid, $reset);
+  $aids = (isset($aid) ? array($aid) : $array());
+  $conditions = (isset($vid) ? array('vid' => $vid) : array());
+  $artwork = artwork_load_multiple($aids, $conditions, $reset);
   return $artwork ? reset($artwork) : FALSE;
 }
 
 /**
- * @function load multiple artwork entities
- * @param type $aids - an array of $aids
- * @param type $condtions - an array of $vids
- * @param type $reset - boolean
- * @return type 
+ * @function method for loading multiple artwork entities
+ * @param type $aids  and array of artwork ids
+ * @param type $conditions - array of artwork version ids
+ * @param type $reset 
+ * @return type  an array of artwork  entities
  */
-function artwork_load_multiple($aids, $condtions, $reset) {
-  $types = artwork_types();
-  $type = str_replace('-', '_', $type);
-  return isset($types[$type]) ? $types[$type] : FALSE;
+function artwork_load_multiple($aids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('artwork', $aids, $conditions, $reset);
+}
+
+/**
+ * Implements hook_forms  (plurarl intentional)
+ * @return string 
+ */
+function artwork_forms() {
+  $forms = array();
+  if ($types = artwork_types()) {
+    foreach (array_keys($types) as $type) {
+      $forms[$type . '_artwork_form']['callback'] = 'artwork_form';
+    }
+  }
+  return $forms;
+}
+
+/**
+ *  Implements hoook_form
+ * @param type $form  - form array
+ * @param array $form_state -  form state array
+ * @param type $artwork - artwork entity
+ * @return string 
+ */
+function artwork_form($form, &$form_state, $artwork) {
+  // Set the id to identify this as an artwork edit form.
+  $form['#id'] = 'artwork-form';
+  // Save the artwork for later, in case we need it.
+  $form['#artwork'] = $artwork;
+  $form_state['artwork'] = $artwork;
+  // Common fields. We don't have many.
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#default_value' => $artwork->title,
+    '#weight' => -5,
+    '#required' => TRUE,
+  );
+  $form['revision'] = array(
+    '#access' => user_access('administer artworks'),
+    '#type' => 'checkbox',
+    '#title' => t('Create new revision'),
+    '#default_value' => 0,
+  );
+  // Add the buttons.
+  $form['buttons'] = array();
+  $form['buttons']['#weight'] = 100;
+  $form['buttons']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+    '#weight' => 5,
+    '#submit' => array('artwork_form_submit'),
+  );
+  if (!empty($artwork->aid)) {
+    $form['buttons']['delete'] = array(
+      '#access' => user_access('delete artworks'),
+      '#type' => 'submit',
+      '#value' => t('Delete'),
+      '#weight' => 15,
+      '#submit' => array('artwork_form_delete_submit'),
+    );
+  }
+  $form['#validate'][] = 'artwork_form_validate';
+  field_attach_form('artwork', $artwork, $form, $form_state);
+  return $form;
+}
+
+function artwork_form_validate($form, &$form_state) {
+  $artwork = $form_state['artwork'];
+  // Field validation.
+  field_attach_form_validate('artwork', $artwork, $form, $form_state);
+}
+
+function artwork_form_submit($form, &$form_state) {
+  global $user;
+  $artwork = &$form_state['artwork'];
+  // Set the artwork's uid if it's being created at this time.
+  if (empty($artwork->uid)) {
+    $artwork->uid = $user->uid;
+  }
+  $artwork->title = $form_state['values']['title'];
+  $artwork->revision = $form_state['values']['revision'];
+  // Notify field widgets.
+  field_attach_submit('artwork', $artwork, $form, $form_state);
+  // Save the artwork.
+  artwork_save($artwork);
+  // Notify the user.
+  drupal_set_message(t('Artwork saved.'));
+  $form_state['redirect'] = 'artwork/' . $artwork->aid;
+}
+
+function artwork_save($artwork) {
+     return entity_get_controller('artwork')->save($artwork);
 }

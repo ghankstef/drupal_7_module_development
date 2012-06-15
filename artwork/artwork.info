@@ -3,6 +3,7 @@ description = Exposes a new entity type called artwork
 core = 7.x 
 package = Drupal 7 Development
 files[] = artwork.module
+files[] = artwork.pages.inc
 files[] = artwork.controller.inc
 files[] = artwork.test
 
