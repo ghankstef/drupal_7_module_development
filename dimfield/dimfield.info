@@ -1,0 +1,5 @@
+name = Dimensions Field
+description = A field offering width, height and depth
+package = Drupal Development
+core = 7.x
+files[] = dimensions.module

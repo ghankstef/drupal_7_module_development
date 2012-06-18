@@ -1,0 +1,82 @@
+<?php
+
+/*
+ * @file dimensions field module  defines  thedimfield  field diplay, editing, and creation interfaces
+ */
+
+
+/**
+ * Implements hook_field_info
+ */
+function dimfield_field_info() {
+  return array(
+    'dimensions' => array(
+      'label' => t('Dimensions'),
+      'description' => t('This field stores width, height and depth.'),
+      'settings' => array('num_dimentions' => 2),
+      'instance_settings' => array(
+        'max_height' => 0,
+        'max_width' => 0,
+        'max_depth' => 0,
+      ),
+      'default_widget' => 'dimfield_combined',
+      'default_formatter' => 'dimfield_default',
+    ),
+  );
+}
+
+/**
+ * Implements magic module callback field_schema().
+ *
+ * param $field  - the field array defintion from hook_field_info
+ * Available data types:
+ * @link http://api.drupal.org/api/drupal/modules!field!field.api.php/function/hook_field_schema/7
+ */
+function dimfield_field_schema($field) {
+  $schema = array();
+  if($field['type'] == 'dimensions') {
+    $schema['columns']['height'] = array(
+      'type' => 'int',
+      'not null' => FALSE,
+    );
+    $schema['columns']['width'] = array(
+      'type' => 'int',
+      'not null' => FALSE,
+    );
+    $schema['indexes'] = array(
+      'height' => array('height'),
+      'width' => array('width'),
+    );
+    if($field['settings']['num_dimentions'] == 3) {
+      $schema['columns']['depth'] = array(
+        'type' => 'int',
+        'not null' => FALSE,
+      );
+    }
+    $schema['columns']['units'] = array(
+      'type' => 'varchar',
+      'length' => 10,
+      'not null' => FALSE,
+    );
+  
+   return $schema;
+  }
+}
+
+/*
+ * Implements magic module callback field_is_empty() do define what an empty value is.
+ * param $item  - the field instance
+ * param $field  - the field array defintion from hook_field_info
+ */
+function dimfield_field_is_empty($item, $field) {
+  if($field['type'] == 'dimensions') {
+    if(empty($item['width']) && empty($item['height']) && $field['settings']['num_dimensions'] == 2 || empty($item['depth'])){
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+function dimfield_field_settings_form() {
+  
+}
